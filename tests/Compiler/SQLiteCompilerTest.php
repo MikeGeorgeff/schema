@@ -495,4 +495,13 @@ final class SQLiteCompilerTest extends TestCase
 
         $this->assertSame([], $sql);
     }
+
+    public function test_table_exists_returns_query_string(): void
+    {
+        $sql = $this->compiler->tableExists();
+
+        $this->assertStringContainsString('sqlite_master', $sql);
+        $this->assertStringContainsString("'table'", $sql);
+        $this->assertStringContainsString('?', $sql);
+    }
 }

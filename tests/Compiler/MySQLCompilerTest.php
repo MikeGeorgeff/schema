@@ -527,4 +527,13 @@ final class MySQLCompilerTest extends TestCase
 
         $this->assertContains('ALTER TABLE `posts` ADD CONSTRAINT `posts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;', $sql);
     }
+
+    public function test_table_exists_returns_query_string(): void
+    {
+        $sql = $this->compiler->tableExists();
+
+        $this->assertStringContainsString('information_schema.tables', $sql);
+        $this->assertStringContainsString('DATABASE()', $sql);
+        $this->assertStringContainsString('?', $sql);
+    }
 }

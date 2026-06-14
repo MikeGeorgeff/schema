@@ -69,6 +69,11 @@ final class SQLiteCompiler extends AbstractCompiler
         return $statements;
     }
 
+    public function tableExists(): string
+    {
+        return "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?;";
+    }
+
     protected function quoteIdentifier(string $identifier): string
     {
         return '"' . $identifier . '"';

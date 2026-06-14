@@ -17,4 +17,6 @@ interface CompilerInterface
      * @return string[]
      */
     public function alter(Blueprint $blueprint): array;
+
+    public function tableExists(): string;
 }

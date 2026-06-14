@@ -39,13 +39,17 @@ use Georgeff\Schema\Compiler\PostgreSQLCompiler;
 use Georgeff\Schema\Compiler\SQLiteCompiler;
 ```
 
-The MySQL compiler accepts optional constructor arguments to override the table options:
+Both `MySQLCompiler` and `PostgreSQLCompiler` accept optional constructor arguments:
 
 ```php
 $compiler = new MySQLCompiler(
-    engine:  'InnoDB',           // default
-    charset: 'utf8mb4',          // default
+    engine:  'InnoDB',            // default
+    charset: 'utf8mb4',           // default
     collate: 'utf8mb4_unicode_ci' // default
+);
+
+$compiler = new PostgreSQLCompiler(
+    schema: 'public' // default; set to your target schema if not using the default
 );
 ```
 
@@ -69,6 +73,20 @@ $compiler->drop('users');
 $compiler->drop('users', ifExists: true);
 // DROP TABLE IF EXISTS "users";
 ```
+
+### `tableExists(): string`
+
+Returns a parameterized SQL query that checks whether a table exists. Pass the table name as a bound parameter when executing — do not interpolate it directly.
+
+```php
+$sql = $compiler->tableExists();
+// execute with [$tableName] as bindings; returns a count
+```
+
+The query shape varies by driver:
+- **MySQL:** queries `information_schema.tables` scoped to `DATABASE()`
+- **PostgreSQL:** queries `information_schema.tables` scoped to the configured schema (default `public`)
+- **SQLite:** queries `sqlite_master`
 
 ### `alter(Blueprint $blueprint): string[]`
 
@@ -205,3 +223,4 @@ $blueprint->string('email')->unique('my_email_constraint');
 | UUID | `CHAR(36)` | `UUID` | `TEXT` |
 | Indexes in `CREATE TABLE` | Inline | Separate statements | Separate statements |
 | `ALTER` foreign key support | Yes | Yes | No |
+| `tableExists` source | `information_schema` + `DATABASE()` | `information_schema` + configured schema | `sqlite_master` |

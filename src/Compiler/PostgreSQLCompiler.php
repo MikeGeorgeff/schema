@@ -11,6 +11,10 @@ use Georgeff\Schema\ForeignKey;
 
 final class PostgreSQLCompiler extends AbstractCompiler
 {
+    public function __construct(
+        private readonly string $schema = 'public'
+    ) {}
+
     public function create(Blueprint $blueprint): array
     {
         $columns = array_map(fn(Column $column) => $this->compileColumn($column), $blueprint->columns);
@@ -83,6 +87,11 @@ final class PostgreSQLCompiler extends AbstractCompiler
         }
 
         return $statements;
+    }
+
+    public function tableExists(): string
+    {
+        return "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{$this->schema}' AND table_name = ?;";
     }
 
     protected function compileBooleanDefault(bool $value): string

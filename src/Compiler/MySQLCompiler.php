@@ -96,6 +96,11 @@ final class MySQLCompiler extends AbstractCompiler
         return $statements;
     }
 
+    public function tableExists(): string
+    {
+        return "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?;";
+    }
+
     protected function quoteIdentifier(string $identifier): string
     {
         return '`' . $identifier . '`';
