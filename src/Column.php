@@ -85,6 +85,11 @@ final class Column
         return $this;
     }
 
+    public function defaultRaw(string $sql): self
+    {
+        return $this->default(new RawExpression($sql));
+    }
+
     public function addOption(string $name, int|string $value): self
     {
         $this->options[$name] = $value;

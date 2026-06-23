@@ -6,6 +6,7 @@ use Closure;
 use Georgeff\Schema\Column;
 use Georgeff\Schema\ColumnType;
 use Georgeff\Schema\IndexType;
+use Georgeff\Schema\RawExpression;
 use PHPUnit\Framework\TestCase;
 
 final class ColumnTest extends TestCase
@@ -207,6 +208,28 @@ final class ColumnTest extends TestCase
 
         $this->assertTrue($column->hasDefault);
         $this->assertFalse($column->defaultValue);
+    }
+
+    public function test_default_raw_sets_raw_expression_and_returns_self(): void
+    {
+        $column = $this->makeColumn('created_at', ColumnType::Timestamp);
+
+        $result = $column->defaultRaw('CURRENT_TIMESTAMP');
+
+        $this->assertSame($column, $result);
+        $this->assertTrue($column->hasDefault);
+        $this->assertInstanceOf(RawExpression::class, $column->defaultValue);
+        $this->assertSame('CURRENT_TIMESTAMP', $column->defaultValue->sql);
+    }
+
+    public function test_default_raw_preserves_expression_as_given(): void
+    {
+        $column = $this->makeColumn('id', ColumnType::Uuid);
+
+        $column->defaultRaw('gen_random_uuid()');
+
+        $this->assertInstanceOf(RawExpression::class, $column->defaultValue);
+        $this->assertSame('gen_random_uuid()', $column->defaultValue->sql);
     }
 
     public function test_add_option_stores_value_and_returns_self(): void

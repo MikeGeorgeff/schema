@@ -6,6 +6,7 @@ use Georgeff\Schema\Index;
 use Georgeff\Schema\Blueprint;
 use Georgeff\Schema\IndexType;
 use Georgeff\Schema\ForeignKey;
+use Georgeff\Schema\RawExpression;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
@@ -52,11 +53,12 @@ abstract class AbstractCompiler implements CompilerInterface
     protected function compileDefault(mixed $value): string
     {
         return match (true) {
-            is_null($value)  => 'NULL',
-            is_bool($value)  => $this->compileBooleanDefault($value),
+            $value instanceof RawExpression => $value->sql,
+            is_null($value)                 => 'NULL',
+            is_bool($value)                 => $this->compileBooleanDefault($value),
             is_int($value),
-            is_float($value) => (string) $value,
-            default          => sprintf("'%s'", addslashes(is_string($value) ? $value : '')),
+            is_float($value)                => (string) $value,
+            default                         => sprintf("'%s'", addslashes(is_string($value) ? $value : '')),
         };
     }
 

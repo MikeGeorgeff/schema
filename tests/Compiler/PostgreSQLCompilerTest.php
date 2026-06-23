@@ -288,6 +288,17 @@ final class PostgreSQLCompilerTest extends TestCase
         $this->assertStringContainsString('DEFAULT NULL', $sql[0]);
     }
 
+    public function test_create_column_with_raw_expression_default(): void
+    {
+        $blueprint = new Blueprint('events');
+        $blueprint->timestamp('created_at')->defaultRaw('CURRENT_TIMESTAMP');
+
+        $sql = $this->compiler->create($blueprint);
+
+        $this->assertStringContainsString('DEFAULT CURRENT_TIMESTAMP', $sql[0]);
+        $this->assertStringNotContainsString("'CURRENT_TIMESTAMP'", $sql[0]);
+    }
+
     public function test_unsigned_is_silently_ignored(): void
     {
         $blueprint = new Blueprint('users');

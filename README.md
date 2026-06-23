@@ -139,11 +139,21 @@ $blueprint->string('email')
     ->unique();
 ```
 
+`defaultRaw()` emits the provided string directly into the DDL without quoting — use it for SQL functions and expressions:
+
+```php
+$blueprint->timestamp('created_at')->defaultRaw('CURRENT_TIMESTAMP');
+$blueprint->string('id')->defaultRaw('gen_random_uuid()');
+```
+
+> **Warning:** `defaultRaw()` must never be called with user-supplied input. It is intended for developer-authored migration files only.
+
 | Modifier | Description |
 |---|---|
 | `nullable(bool $value = true)` | Allows `NULL`; pass `false` to revert |
 | `unsigned()` | `UNSIGNED` (MySQL only; ignored on PostgreSQL and SQLite) |
 | `default(mixed $value)` | Sets a default value |
+| `defaultRaw(string $sql)` | Sets a raw SQL expression as the default — emitted unquoted |
 | `incrementing()` | `AUTO_INCREMENT` (MySQL) / `SERIAL`/`BIGSERIAL` (PostgreSQL) / `AUTOINCREMENT` (SQLite) |
 | `primary(?string $name = null)` | Marks column as primary key |
 | `unique(?string $name = null)` | Adds a unique index |
